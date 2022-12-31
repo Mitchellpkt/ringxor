@@ -9,15 +9,11 @@ with open(data_path, "r") as f:
     all_rings_raw = json.load(f)
 
 # The code uses sets, but they can't be serialized to json, so we convert back here from temporary list representation
-all_rings: ringxor.ring_bucket = {
-    key_image: set(ring) for key_image, ring in all_rings_raw.items()
-}
+all_rings: ringxor.ring_bucket = {key_image: set(ring) for key_image, ring in all_rings_raw.items()}
 
 
 def test_ringxor_process_bucket_single_thread_core():
-    results = sorted(
-        ringxor.process_bucket_single_thread_core(all_rings, index_pairs=None)
-    )
+    results = sorted(ringxor.process_bucket_single_thread_core(all_rings, index_pairs=None))
 
     assert len(results) == 54
     assert results[0] == (
@@ -46,13 +42,9 @@ def test_ringxor_process_bucket_1_worker():
 
 def test_ringxor_process_bucket_N_worker():
     if cpu_count() == 1:
-        print(
-            "Skipping test_ringxor_process_bucket_N_worker because only 1 CPU is available"
-        )
+        print("Skipping test_ringxor_process_bucket_N_worker because only 1 CPU is available")
     else:
-        results = sorted(
-            ringxor.process_bucket(all_rings, index_pairs=None, num_workers=2)
-        )
+        results = sorted(ringxor.process_bucket(all_rings, index_pairs=None, num_workers=2))
 
         assert len(results) == 54
         assert results[0] == (

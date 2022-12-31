@@ -4,7 +4,7 @@ Transaction tree analysis
 
 Mitchell P. Krawiec-Thayer (@isthmus) // Noncesense Research Lab
 
-This library enables passive deanonymization of Monero-style blockchains for true spends revealed by "differ-by-one" ring pair analysis (described below).
+This library enables passive deanonymization of Monero-style blockchains for true spends revealed by "differ-by-one" ring pair analysis (described below). The analysis engine leverages CPU multiprocessing and automatically distributes the workload across cores (this can be disabled & the number of workers can be adjusted).
 
 **NOTE: If you generate transactions with a "wallet2"-based software (such as the core GUI or CLI) then they should not exhibit the anomaly exploited by this analysis.**
 

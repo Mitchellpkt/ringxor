@@ -1,7 +1,6 @@
-from typing import Type, TypeVar, Dict, Set, List, Tuple, Union, Any, Collection
+from typing import Type, Dict, Set, List, Tuple, Union, Any, Collection
 import itertools
 from multiprocessing import Pool, cpu_count
-import numpy as np
 
 # This aliasing is temporary, until the schema is finalized
 key_image_pointer: Type = Union[int, str, Any]
@@ -74,21 +73,15 @@ def process_bucket(
 
     if num_workers <= 1:
         # If we only have one worker, just run the single-threaded version
-        return process_bucket_single_thread_core(
-            rings, index_pairs=key_image_pointer_pairs
-        )
+        return process_bucket_single_thread_core(rings, index_pairs=key_image_pointer_pairs)
     else:
         # Split the work into chunks
-        batches = [
-            list(key_image_pointer_pairs)[i::num_workers] for i in range(num_workers)
-        ]
+        batches = [list(key_image_pointer_pairs)[i::num_workers] for i in range(num_workers)]
         iterable = [(rings, batch) for batch in batches]
 
         # Process the chunks in parallel
         with Pool(processes=num_workers) as pool:
-            results: List[
-                List[Tuple[key_image_pointer, output_pointer]]
-            ] = pool.starmap(
+            results: List[List[Tuple[key_image_pointer, output_pointer]]] = pool.starmap(
                 process_bucket_single_thread_core,
                 iterable,
             )

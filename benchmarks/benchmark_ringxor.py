@@ -31,26 +31,20 @@ for num_workers in num_workers_list:
         i += 1
     print(f"{len(all_rings)} rings generated")
 
-    index_tuples_all: List[
-        Tuple[ringxor.key_image_pointer, ringxor.key_image_pointer]
-    ] = list(itertools.combinations(all_rings.keys(), 2))
+    index_tuples_all: List[Tuple[ringxor.key_image_pointer, ringxor.key_image_pointer]] = list(
+        itertools.combinations(all_rings.keys(), 2)
+    )
     print(f"{len(index_tuples_all)} index tuples generated")
 
     index_tuples = index_tuples_all[:num_ring_pairs]
     print(f"{len(index_tuples)} index tuples to be used")
 
     tic: float = perf_counter()
-    results = sorted(
-        ringxor.process_bucket(
-            all_rings, index_pairs=index_tuples, num_workers=num_workers
-        )
-    )
+    results = sorted(ringxor.process_bucket(all_rings, index_pairs=index_tuples, num_workers=num_workers))
     toc: float = perf_counter()
     wall_time_sec = toc - tic
 
-    print(
-        f"Processed {len(index_tuples)} ring pairs in {wall_time_sec:.2f} seconds on {num_workers} cores"
-    )
+    print(f"Processed {len(index_tuples)} ring pairs in {wall_time_sec:.2f} seconds on {num_workers} cores")
     iter_per_sec: float = len(index_tuples) / wall_time_sec
     print(f"({iter_per_sec:.2f} ring par checks per second)\n")
     timing_results.append((num_workers, iter_per_sec))
