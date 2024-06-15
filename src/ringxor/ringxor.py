@@ -44,7 +44,7 @@ def process_bucket_single_thread_core(
                 "output_pointer": (ring_left - ring_right).pop(),
             }
             if diagnostic_level > 0:
-                left_edge["match_key_image_pointer"] = (key_image_pointer_right,)
+                left_edge["match_key_image_pointer"] = key_image_pointer_right
             edges.append(left_edge)
 
             right_edge: Dict[str, Any] = {
@@ -52,7 +52,7 @@ def process_bucket_single_thread_core(
                 "output_pointer": (ring_right - ring_left).pop(),
             }
             if diagnostic_level > 0:
-                right_edge["match_key_image_pointer"] = (key_image_pointer_left,)
+                right_edge["match_key_image_pointer"] = key_image_pointer_left
             edges.append(right_edge)
 
     return edges
