@@ -60,7 +60,7 @@ anomalous_tx_hashes = df_labels[
     (df_labels["anomalous_intertransaction_decoy_reuse"] == True)
     | (df_labels["anomalous_intratransaction_decoy_reuse"] == True)
 ]["tx_hash"].unique()
-num_txns: int = df_rings["tx_hash"].unique()
+num_txns: int = df_rings["tx_hash"].nunique()
 logger.info(f"Flagged subset {len(anomalous_tx_hashes)=} out of {num_txns=} transactions.")
 subset_path = output_path / f"subset_{output_tag}.json"
 aggregate_and_output_to_json(df_rings[df_rings["tx_hash"].isin(anomalous_tx_hashes)], subset_path)
