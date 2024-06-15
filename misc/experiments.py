@@ -5,10 +5,10 @@ from typing import List, Dict, Any
 from loguru import logger
 import pandas as pd
 
-num_workers: int = 2
-# input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
-input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
-output_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "local_only" / "results" / "result_from_demo_rings.csv"
+num_workers: int = 54
+input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
+# input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
+output_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "local_only" / "results" / "result_d1.csv"
 logger.info(f"Loading data from: {input_data_path} with {num_workers=}")
 
 # Load the test data
@@ -21,7 +21,7 @@ all_rings: ringxor.ring_bucket = {key_image: set(ring) for key_image, ring in al
 logger.info(f"Converted ring data to sets: {len(all_rings)}")
 
 # Do the analysis
-results_raw: List[Dict[str, Any]] = ringxor.process_bucket(all_rings, index_pairs=None, diagnostic_level=1)
+results_raw: List[Dict[str, Any]] = ringxor.process_bucket(all_rings, index_pairs=None, diagnostic_level=1, num_workers=num_workers)
 logger.info(f"Processed bucket: {len(results_raw)}")
 
 # Reshape the results
