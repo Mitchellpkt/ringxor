@@ -4,7 +4,7 @@ from src.ringxor import ringxor
 import pathlib
 
 # Load the test data
-data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "demo_rings.json"
+data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "version_controlled" / "demo_rings.json"
 with open(data_path, "r") as f:
     all_rings_raw = json.load(f)
 
