@@ -2,6 +2,7 @@ from typing import Type, Dict, Set, List, Tuple, Union, Any, Collection
 import itertools
 from multiprocessing import Pool, cpu_count
 from tqdm.auto import tqdm
+from loguru import logger
 
 # This aliasing is temporary, until the schema is finalized
 key_image_pointer: Type = Union[int, str, Any]
@@ -16,6 +17,7 @@ def process_bucket_single_thread_core(
     index_pairs: Union[List[Tuple[int, int]], None],
     diagnostic_level: int = 0,
     show_progress_bar: bool = True,
+    verbosity_level: int = 0,
 ) -> List[edge]:
     """
     Core function - you do not need to interact with this directly, use `process_bucket()` below
@@ -30,11 +32,15 @@ def process_bucket_single_thread_core(
     # If no index pairs are provided (could be None, (), {}, [], etc...), use all possible combinations
     if not index_pairs:
         index_pairs = itertools.product(list(rings.keys()), list(rings.keys()))
+    if verbosity_level:
+        logger.info(f"Processing {len(index_pairs)} index pairs")
 
     # Avoid redundant checks by only crunching the upper triangle of the index pair matrix
     key_image_pointer_pairs: Set[Tuple[key_image_pointer, key_image_pointer]] = {
         tuple(sorted(ip)) for ip in index_pairs
     }
+    if verbosity_level:
+        logger.info(f"Reduced to {len(key_image_pointer_pairs)} index pairs")
 
     # Process the bucket
     edges: List[edge] = []
@@ -71,6 +77,7 @@ def process_bucket(
     index_pairs: Union[None, Collection[Tuple[int, int]]] = None,
     num_workers: Union[int, None] = None,
     diagnostic_level: int = 0,
+    verbosity_level: int = 0,
 ) -> List[edge]:
     """
     This function takes a bucket of rings and processes them to identify transaction tree edges from singletons
@@ -82,14 +89,21 @@ def process_bucket(
     :param diagnostic_level: 0 = no diagnostics, 1 = include match_key_image_pointer
     :return: identified transaction tree edges in the form of {"key_image_pointer": key_image, "output_pointer": output}
     """
+    if verbosity_level:
+        logger.info(f"Processing {len(rings)} rings")
+    
     # If no index pairs are provided, use all possible combinations
     if index_pairs is None:
         index_pairs = itertools.product(list(rings.keys()), list(rings.keys()))
+    if verbosity_level:
+        logger.info(f"Processing {len(index_pairs)} index pairs")
 
     # Avoid redundant checks by only crunching the upper triangle of the index pair matrix
     key_image_pointer_pairs: List[Tuple[key_image_pointer, key_image_pointer]] = list(
         {tuple(sorted(ip)) for ip in index_pairs}
     )
+    if verbosity_level:
+        logger.info(f"Reduced to {len(key_image_pointer_pairs)} index pairs")
 
     # Use all available cores unless specified otherwise
     if num_workers is None:
@@ -101,16 +115,26 @@ def process_bucket(
     else:
         # Split the work into chunks
         batches = [list(key_image_pointer_pairs)[i::num_workers] for i in range(num_workers)]
+        if verbosity_level:
+            logger.info(f"Split work into {num_workers} batches")
         iterable = [(rings, batch, diagnostic_level) for batch in batches]
-
+        if verbosity_level:
+            logger.info(f"Starting parallel processing with {num_workers} workers")
+            
         # Process the chunks in parallel
         with Pool(processes=num_workers) as pool:
             results: List[List[edge]] = pool.starmap(
                 process_bucket_single_thread_core,
                 iterable,
             )
+        if verbosity_level:
+            logger.info(f"Processed {len(results)} result batches")
+            
         # Combine the results
         edges: List[edge] = []
         for result in results:
             edges.extend(result)
+        if verbosity_level:
+            logger.info(f"Reshaped to {len(edges)} edges")
+            
         return edges
