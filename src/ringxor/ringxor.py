@@ -1,6 +1,7 @@
 from typing import Type, Dict, Set, List, Tuple, Union, Any, Collection
 import itertools
 from multiprocessing import Pool, cpu_count
+from tqdm.auto import tqdm
 
 # This aliasing is temporary, until the schema is finalized
 key_image_pointer: Type = Union[int, str, Any]
@@ -14,6 +15,7 @@ def process_bucket_single_thread_core(
     rings: ring_bucket,
     index_pairs: Union[List[Tuple[int, int]], None],
     diagnostic_level: int = 0,
+    show_progress_bar: bool = True,
 ) -> List[edge]:
     """
     Core function - you do not need to interact with this directly, use `process_bucket()` below
@@ -22,6 +24,7 @@ def process_bucket_single_thread_core(
     :param rings: bucket of rings to analyze
     :param index_pairs: list of index pairs to process. If None provided, checks all possible combinations
     :param diagnostic_level: 0 = no diagnostics, 1 = include match_key_image_pointer
+    :param show_progress_bar: show a progress bar
     :return: identified transaction tree edges in the form of {"key_image_pointer": key_image, "output_pointer": output}
     """
     # If no index pairs are provided (could be None, (), {}, [], etc...), use all possible combinations
@@ -35,7 +38,11 @@ def process_bucket_single_thread_core(
 
     # Process the bucket
     edges: List[edge] = []
-    for key_image_pointer_left, key_image_pointer_right in key_image_pointer_pairs:
+    if show_progress_bar:
+        p = tqdm(key_image_pointer_pairs, mininterval=1)
+    else:
+        p = key_image_pointer_pairs
+    for key_image_pointer_left, key_image_pointer_right in p:
         ring_left: ring_vector = rings[key_image_pointer_left]
         ring_right: ring_vector = rings[key_image_pointer_right]
         # Do we have a singleton?
