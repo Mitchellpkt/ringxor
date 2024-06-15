@@ -17,7 +17,7 @@ def process_bucket_single_thread_core(
     index_pairs: Union[List[Tuple[int, int]], None],
     diagnostic_level: int = 0,
     show_progress_bar: bool = True,
-    verbosity_level: int = 0,
+    verbosity_level: int = 1,
 ) -> List[edge]:
     """
     Core function - you do not need to interact with this directly, use `process_bucket()` below
@@ -31,7 +31,7 @@ def process_bucket_single_thread_core(
     """
     # If no index pairs are provided (could be None, (), {}, [], etc...), use all possible combinations
     if not index_pairs:
-        index_pairs = itertools.product(list(rings.keys()), list(rings.keys()))
+        index_pairs = list(itertools.product(list(rings.keys()), list(rings.keys())))
     if verbosity_level:
         logger.info(f"Processing {len(index_pairs)} index pairs")
 
@@ -77,7 +77,7 @@ def process_bucket(
     index_pairs: Union[None, Collection[Tuple[int, int]]] = None,
     num_workers: Union[int, None] = None,
     diagnostic_level: int = 0,
-    verbosity_level: int = 0,
+    verbosity_level: int = 1,
 ) -> List[edge]:
     """
     This function takes a bucket of rings and processes them to identify transaction tree edges from singletons
@@ -94,7 +94,7 @@ def process_bucket(
     
     # If no index pairs are provided, use all possible combinations
     if index_pairs is None:
-        index_pairs = itertools.product(list(rings.keys()), list(rings.keys()))
+        index_pairs = list(itertools.product(list(rings.keys()), list(rings.keys())))
     if verbosity_level:
         logger.info(f"Processing {len(index_pairs)} index pairs")
 
