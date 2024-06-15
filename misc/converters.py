@@ -13,6 +13,7 @@ label_data: Path = Path("/media/m/data_drive_2/monero/package/transactions_label
 
 output_tag: str = "d1"
 output_path: Path = Path("/home/m/Projects/GitHub/ringxor/data/local_only/")
+logger.info(f"Starting: {output_tag=}")
 
 # Check and load inputs
 if not ring_data.exists():
