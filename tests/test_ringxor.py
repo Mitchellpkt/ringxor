@@ -64,3 +64,24 @@ def test_ringxor_process_bucket_N_worker():
             "key_image_pointer": "fdfcbe3f85e480905d5db681bf89e5b81dc514871f0735c8a8cc7dffb6d7cde8",
             "output_pointer": "6d1fe6224bfccbb5f660d08bdb23fba89e75cf7d367b16bc40bcb3d337e12b0e",
         }
+
+
+def test_ringxor_process_bucket_diagnostic_level():
+    results = sorted(
+        ringxor.process_bucket(all_rings, index_pairs=None, diagnostic_level=1),
+        key=lambda x: x["key_image_pointer"],
+    )
+    assert len(results) == 54
+
+    # Check 0th element
+    assert results[0] == {
+        "key_image_pointer": "056189f0c3ed7806bc17655152613b3288dfa496b6566b9bbef930efaa87975f",
+        "output_pointer": "416e9438f9f69410cf42959dc8ee515318ea6710e5bf8eb76f69c6183a09bded",
+        "match_key_image_pointer": "af6cb1936c08108500c3756e81073b6e48b33405be54df891e8b6e433b66b216",
+    }
+
+    # Check counterpart of 0th element
+    counterpart: dict = next(
+        x for x in results if x["key_image_pointer"] == results[0]["match_key_image_pointer"]
+    )
+    assert counterpart["match_key_image_pointer"] == results[0]["key_image_pointer"]
