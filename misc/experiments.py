@@ -1,11 +1,12 @@
 import json
 from src.ringxor import ringxor
 import pathlib
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from loguru import logger
 import pandas as pd
 
-num_workers: int = 54
+num_workers: int = 1
+limit: Optional[int] = 10000
 input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
 # input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
 output_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "local_only" / "results" / "result_d1.csv"
@@ -19,6 +20,10 @@ logger.info(f"Loaded ring data: {len(all_rings_raw)}")
 # The code uses sets, but they can't be serialized to json, so we convert back here from temporary list representation
 all_rings: ringxor.ring_bucket = {key_image: set(ring) for key_image, ring in all_rings_raw.items()}
 logger.info(f"Converted ring data to sets: {len(all_rings)}")
+
+if limit:
+    all_rings = dict(list(all_rings.items())[:limit])
+    logger.info(f"Reduced to {len(all_rings)} rings")
 
 # Do the analysis
 results_raw: List[Dict[str, Any]] = ringxor.process_bucket(all_rings, index_pairs=None, diagnostic_level=1, num_workers=num_workers)
