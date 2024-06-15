@@ -13,6 +13,7 @@ edge: Type = Dict[str, Any]
 def process_bucket_single_thread_core(
     rings: ring_bucket,
     index_pairs: Union[List[Tuple[int, int]], None],
+    diagnostic_level: int = 0,
 ) -> List[edge]:
     """
     Core function - you do not need to interact with this directly, use `process_bucket()` below
@@ -38,18 +39,21 @@ def process_bucket_single_thread_core(
         ring_right: ring_vector = rings[key_image_pointer_right]
         # Do we have a singleton?
         if len(ring_left & ring_right) == len(ring_left) - 1:
-            edges.append(
-                {
-                    "key_image_pointer": key_image_pointer_left,
-                    "output_pointer": (ring_left - ring_right).pop(),
-                }
-            )
-            edges.append(
-                {
-                    "key_image_pointer": key_image_pointer_right,
-                    "output_pointer": (ring_right - ring_left).pop(),
-                }
-            )
+            left_edge: Dict[str, Any] = {
+                "key_image_pointer": key_image_pointer_left,
+                "output_pointer": (ring_left - ring_right).pop(),
+            }
+            if diagnostic_level > 0:
+                left_edge["match_key_image_pointer"] = (key_image_pointer_right,)
+            edges.append(left_edge)
+
+            right_edge: Dict[str, Any] = {
+                "key_image_pointer": key_image_pointer_right,
+                "output_pointer": (ring_right - ring_left).pop(),
+            }
+            if diagnostic_level > 0:
+                right_edge["match_key_image_pointer"] = (key_image_pointer_left,)
+            edges.append(right_edge)
 
     return edges
 
@@ -58,6 +62,7 @@ def process_bucket(
     rings: ring_bucket,
     index_pairs: Union[None, Collection[Tuple[int, int]]] = None,
     num_workers: Union[int, None] = None,
+    diagnostic_level: int = 0,
 ) -> List[edge]:
     """
     This function takes a bucket of rings and processes them to identify transaction tree edges from singletons
@@ -87,7 +92,7 @@ def process_bucket(
     else:
         # Split the work into chunks
         batches = [list(key_image_pointer_pairs)[i::num_workers] for i in range(num_workers)]
-        iterable = [(rings, batch) for batch in batches]
+        iterable = [(rings, batch, diagnostic_level) for batch in batches]
 
         # Process the chunks in parallel
         with Pool(processes=num_workers) as pool:
