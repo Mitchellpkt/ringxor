@@ -21,6 +21,7 @@ def process_bucket_single_thread_core(
 
     :param rings: bucket of rings to analyze
     :param index_pairs: list of index pairs to process. If None provided, checks all possible combinations
+    :param diagnostic_level: 0 = no diagnostics, 1 = include match_key_image_pointer
     :return: identified transaction tree edges in the form of {"key_image_pointer": key_image, "output_pointer": output}
     """
     # If no index pairs are provided (could be None, (), {}, [], etc...), use all possible combinations
@@ -71,6 +72,7 @@ def process_bucket(
     :param rings: bucket of rings to analyze
     :param index_pairs: list of index pairs to process. If None provided, checks all possible combinations
     :param num_workers: number of workers to use. If None provided, uses all available cores
+    :param diagnostic_level: 0 = no diagnostics, 1 = include match_key_image_pointer
     :return: identified transaction tree edges in the form of {"key_image_pointer": key_image, "output_pointer": output}
     """
     # If no index pairs are provided, use all possible combinations
