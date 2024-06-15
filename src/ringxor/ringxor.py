@@ -38,8 +38,18 @@ def process_bucket_single_thread_core(
         ring_right: ring_vector = rings[key_image_pointer_right]
         # Do we have a singleton?
         if len(ring_left & ring_right) == len(ring_left) - 1:
-            edges.append({"key_image_pointer": key_image_pointer_left, "output_pointer": (ring_left - ring_right).pop()})
-            edges.append({"key_image_pointer": key_image_pointer_right, "output_pointer": (ring_right - ring_left).pop()})
+            edges.append(
+                {
+                    "key_image_pointer": key_image_pointer_left,
+                    "output_pointer": (ring_left - ring_right).pop(),
+                }
+            )
+            edges.append(
+                {
+                    "key_image_pointer": key_image_pointer_right,
+                    "output_pointer": (ring_right - ring_left).pop(),
+                }
+            )
 
     return edges
 

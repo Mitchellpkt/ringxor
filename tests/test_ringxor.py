@@ -13,7 +13,10 @@ all_rings: ringxor.ring_bucket = {key_image: set(ring) for key_image, ring in al
 
 
 def test_ringxor_process_bucket_single_thread_core():
-    results = sorted(ringxor.process_bucket_single_thread_core(all_rings, index_pairs=None), key=lambda x: x['key_image_pointer'])
+    results = sorted(
+        ringxor.process_bucket_single_thread_core(all_rings, index_pairs=None),
+        key=lambda x: x["key_image_pointer"],
+    )
 
     assert len(results) == 54
     assert results[0] == {
@@ -27,7 +30,10 @@ def test_ringxor_process_bucket_single_thread_core():
 
 
 def test_ringxor_process_bucket_1_worker():
-    results = sorted(ringxor.process_bucket(all_rings, index_pairs=None, num_workers=1), key=lambda x: x['key_image_pointer'])
+    results = sorted(
+        ringxor.process_bucket(all_rings, index_pairs=None, num_workers=1),
+        key=lambda x: x["key_image_pointer"],
+    )
 
     assert len(results) == 54
     assert results[0] == {
@@ -44,7 +50,10 @@ def test_ringxor_process_bucket_N_worker():
     if cpu_count() == 1:
         print("Skipping test_ringxor_process_bucket_N_worker because only 1 CPU is available")
     else:
-        results = sorted(ringxor.process_bucket(all_rings, index_pairs=None, num_workers=2), key=lambda x: x['key_image_pointer'])
+        results = sorted(
+            ringxor.process_bucket(all_rings, index_pairs=None, num_workers=2),
+            key=lambda x: x["key_image_pointer"],
+        )
 
         assert len(results) == 54
         assert results[0] == {
