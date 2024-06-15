@@ -40,7 +40,7 @@ def aggregate_and_output_to_json(df: pd.DataFrame, output_file: Path):
     logger.info(f"Aggregating data ({len(df)=}) to: {output_file}")
     aggregated_data = {}
 
-    for _, row in tqdm(df.iterrows(), mininterval=2):
+    for _, row in tqdm(df.iterrows(), mininterval=2, total=len(df), desc="Aggregating data"):
         key_image_pointer = row["key_image_pointer"]
         output_pointer = row["output_pointer"]
 
@@ -60,7 +60,8 @@ anomalous_tx_hashes = df_labels[
     (df_labels["anomalous_intertransaction_decoy_reuse"] == True)
     | (df_labels["anomalous_intratransaction_decoy_reuse"] == True)
 ]["tx_hash"].unique()
-logger.info(f"{len(anomalous_tx_hashes)}\n/\n{len(df_rings['tx_hash'].unique())}")
+num_txns: int = df_rings["tx_hash"].unique()
+logger.info(f"Flagged subset {len(anomalous_tx_hashes)=} out of {num_txns=} transactions.")
 subset_path = output_path / f"subset_{output_tag}.json"
 aggregate_and_output_to_json(df_rings[df_rings["tx_hash"].isin(anomalous_tx_hashes)], subset_path)
 logger.info(f"Output subset data to: {subset_path}")
