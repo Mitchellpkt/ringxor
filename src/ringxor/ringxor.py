@@ -15,7 +15,7 @@ edge: Type = Dict[str, Any]
 def process_bucket_single_thread_core(
     rings: ring_bucket,
     index_pairs: Union[List[Tuple[int, int]], None],
-    diagnostic_level: int = 0,
+    diagnostic_level: int = 1,
     show_progress_bar: bool = True,
     verbosity_level: int = 1,
 ) -> List[edge]:
@@ -27,6 +27,7 @@ def process_bucket_single_thread_core(
     :param index_pairs: list of index pairs to process. If None provided, checks all possible combinations
     :param diagnostic_level: 0 = no diagnostics, 1 = include match_key_image_pointer
     :param show_progress_bar: show a progress bar
+    :param verbosity_level: 0 = silent
     :return: identified transaction tree edges in the form of {"key_image_pointer": key_image, "output_pointer": output}
     """
     # If no index pairs are provided (could be None, (), {}, [], etc...), use all possible combinations
@@ -76,7 +77,7 @@ def process_bucket(
     rings: ring_bucket,
     index_pairs: Union[None, Collection[Tuple[int, int]]] = None,
     num_workers: Union[int, None] = None,
-    diagnostic_level: int = 0,
+    diagnostic_level: int = 1,
     verbosity_level: int = 1,
 ) -> List[edge]:
     """
@@ -87,6 +88,7 @@ def process_bucket(
     :param index_pairs: list of index pairs to process. If None provided, checks all possible combinations
     :param num_workers: number of workers to use. If None provided, uses all available cores
     :param diagnostic_level: 0 = no diagnostics, 1 = include match_key_image_pointer
+    :param verbosity_level: 0 = silent
     :return: identified transaction tree edges in the form of {"key_image_pointer": key_image, "output_pointer": output}
     """
     if verbosity_level:
@@ -99,9 +101,9 @@ def process_bucket(
         logger.info(f"Processing {len(index_pairs)} index pairs")
 
     # Avoid redundant checks by only crunching the upper triangle of the index pair matrix
-    key_image_pointer_pairs: List[Tuple[key_image_pointer, key_image_pointer]] = list(
-        {tuple(sorted(ip)) for ip in index_pairs}
-    )
+    key_image_pointer_pairs: List[Tuple[key_image_pointer, key_image_pointer]] = [
+        (ind1, ind2) for ind1, ind2 in tqdm(index_pairs, mininterval=1) if ind2 > ind1
+    ]
     if verbosity_level:
         logger.info(f"Reduced to {len(key_image_pointer_pairs)} index pairs")
 
