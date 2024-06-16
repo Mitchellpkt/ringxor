@@ -17,4 +17,5 @@ Changelog
 * Option to include matches in the output
 * Optional verbosity
 * Dict structure for output [breaking from 0.0.2.x]
+* Automatic length check/match
 * Misc updates to readme over subsequent 0.0.3.x versions
