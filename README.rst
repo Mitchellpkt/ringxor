@@ -83,3 +83,31 @@ Also, because sets with different sizes cannot produce a DBO ring pair, we can r
 This process is "embarrassingly parallel", and this library implements CPU multiprocessing.
 
 Benchmarks for new unoptimized python code: about 850,000 ring pair checks per second. Previous prototype code clocked in an order of magnitude faster, but I think the new numbers are more practical when actually juggling a large number of rings.
+
+Future work - converting from ``O(R^2)`` to ``O(R)``
+====================================================
+
+While the naive algorithm scales with ``O(R^2)`` with respect to number of rings, **applying preliminary sorting enables exact matching to be subsequently executed in effectively** ``O(R)`` **time!!**
+
+This is achieved by sorting the outputs within each ring (usually this is already the case) and then applying a lexicographic sort to the rings themselves. Then checks are made based on the first 3 elements of each ring (note: this will always be exactly the first 3 regardless of the ring size).
+
+(1) When comparing two rings A & B, we only need to check the first 3 elements of each side. If they have 0-1 differences, process the entirety of both rings to check if they are DBO. If there are 2 differences among the first 3 elements, there is no need to check the entire ring.
+
+(2) If there are 3 differences among the first 3 elements (i.e. the sets are disjoint), we have exited the neighborhood of possible DBO matches for ring A, and can step forward to the next candidate.
+
+Example: Consider several rings, which we have sorted lexicographically (both inside the rings, and the rings themselves).::
+
+    A = {0, 1, 2, 3, 4}
+    B = {1, 3, 5, 7, 9}
+    C = {3, 4, 6, 7, 8}
+    D = {4, 6, 7, 8, 9}
+
+First we check A[:3] and B[:3]. Since {0,1,2} and {1,3,5} differ by 2 we can skip the rest of the calculation.
+
+So we move onto A[:3] and C[:3]. Since {0,1,2} and {3,4,6} differ by 3 we can skip the rest of the calculation. Furthermore we skip all further comparisons with A. **(This type of early break is the main optimization breakthrough that helps us avoid O(R^2) complexity!!)**
+
+So we move onto B[:3] and C[:3]. Since {1,3,5} and {3,4,6} differ by 2 we can skip the rest of the calculation.
+
+Now we move onto B[:3] and D[:3]. Since {1,3,5} and {4,6,7} differ by 3 we can skip the rest of the calculation. Furthermore we skip all further comparisons with B.
+
+Now we check C[:3] and D[:3]. Since {3,4,6} and {4,6,7} differ by only 1 we must check the entire rings to see if they are DBO. (In this case, they are DBO, so we can infer that ring C spends output #3 and ring D spends output #9)

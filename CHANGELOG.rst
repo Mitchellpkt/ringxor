@@ -17,3 +17,8 @@ Changelog
 * Option to include matches in the output
 * Optional verbosity
 * Dict structure for output [breaking from 0.0.2.x]
+
+0.0.3.1 (2024-06-15)
+--------------------
+
+* Updated readme
