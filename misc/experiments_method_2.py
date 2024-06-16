@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm.auto import tqdm
 
 num_workers: int = 1
-limit: Optional[int] = 10_000
+limit: Optional[int] = 50_000
 convert_to_ints: bool = True  # Only do this if your output index can be converted to int
 input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
 # input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
@@ -64,7 +64,7 @@ logger.info(f"Cut down to relevant rings, and converted to sets: {len(relevant_r
 
 # Do the analysis
 results_raw: List[Dict[str, Any]] = ringxor.process_bucket(
-    relevant_rings, index_pairs=None, diagnostic_level=1, num_workers=num_workers
+    relevant_rings, index_pairs=index_pairs, diagnostic_level=1, num_workers=num_workers
 )
 logger.info(f"Processed bucket: {len(results_raw)}")
 
