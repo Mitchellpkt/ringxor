@@ -38,7 +38,7 @@ def process_bucket_single_thread_core(
 
     # Avoid redundant checks by only crunching the upper triangle of the index pair matrix
     key_image_pointer_pairs: Set[Tuple[key_image_pointer, key_image_pointer]] = {
-        (ind1, ind2) for ind1, ind2 in index_pairs if ind2 > ind1
+        (ind1, ind2) for ind1, ind2 in tqdm(index_pairs) if ind2 > ind1
     }
     if verbosity_level:
         logger.info(f"Reduced to {len(key_image_pointer_pairs)} index pairs")
