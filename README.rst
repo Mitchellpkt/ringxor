@@ -91,23 +91,16 @@ While the naive algorithm scales with ``O(R^2)`` with respect to number of rings
 
 This is achieved by sorting the outputs within each ring (usually this is already the case) and then applying a lexicographic sort to the rings themselves. Then checks are made based on the first 3 elements of each ring (note: this will always be exactly the first 3 regardless of the ring size).
 
-(1) When comparing two rings A & B, we only need to check the first 3 elements of each side. If they have 0-1 differences, process the entirety of both rings to check if they are DBO. If there are 2 differences among the first 3 elements, there is no need to check the entire ring.
+(1) When comparing two rings A & B, we only need to check the symmetric difference of the first 3 elements of each ring. For example the symmetric difference of `{1,2,3}` and `{2,3,4}` would be `{1,4}`. If the difference has <= 2 elements, process the entirety of both rings to check if they are DBO. If there are >2 differences among the first 3 elements, there is no need to check the entire ring.
 
-(2) If there are 3 differences among the first 3 elements (i.e. the sets are disjoint), we have exited the neighborhood of possible DBO matches for ring A, and can step forward to the next candidate.
+(2) If there are >=4 differences among the first 3 elements, we have exited the neighborhood of possible DBO matches for ring A, and can step forward to the next candidate.
 
 Example: Consider several rings, which we have sorted lexicographically (both inside the rings, and the rings themselves)::
 
     A = {0, 1, 2, 3, 4}
-    B = {1, 3, 5, 7, 9}
-    C = {3, 4, 6, 7, 8}
-    D = {4, 6, 7, 8, 9}
+    B = {2, 4, 6, 7, 8}
+    C = {4, 6, 7, 8, 9}
 
-First we check A[:3] and B[:3]. Since {0,1,2} and {1,3,5} differ by 2 we can skip the rest of the calculation.
+First we check A[:3] and B[:3]. Since {0,1,2} and {2,4,6} have a symmetric difference with 4 elements ({0,1,4,6}) we can skip the rest of the calculation. Furthermore we skip all further comparisons with A. **(This type of early break is the main optimization breakthrough that helps us avoid O(R^2) complexity!!)**
 
-So we move onto A[:3] and C[:3]. Since {0,1,2} and {3,4,6} differ by 3 we can skip the rest of the calculation. Furthermore we skip all further comparisons with A. **(This type of early break is the main optimization breakthrough that helps us avoid O(R^2) complexity!!)**
-
-So we move onto B[:3] and C[:3]. Since {1,3,5} and {3,4,6} differ by 2 we can skip the rest of the calculation.
-
-Now we move onto B[:3] and D[:3]. Since {1,3,5} and {4,6,7} differ by 3 we can skip the rest of the calculation. Furthermore we skip all further comparisons with B.
-
-Now we check C[:3] and D[:3]. Since {3,4,6} and {4,6,7} differ by only 1 we must check the entire rings to see if they are DBO. (In this case, they are DBO, so we can infer that ring C spends output #3 and ring D spends output #9)
+Now we check B[:3] and C[:3]. Since {2,4,6} and {4,6,7} have a symmetric difference of length 2 we must check the entire rings to see if they are DBO. (In this case, they are DBO, so we can infer that ring B spends output #2 and ring C spends output #9)
