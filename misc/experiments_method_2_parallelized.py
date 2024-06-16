@@ -7,6 +7,8 @@ from typing import List, Dict, Any, Optional, Set, Tuple
 from loguru import logger
 import pandas as pd
 from tqdm.auto import tqdm
+import math
+
 from multiprocessing import Pool
 
 num_workers_preprocess: int = 54
@@ -40,31 +42,37 @@ if convert_to_ints:
 all_rings: Dict[str, List[Any]] = {key_image: sorted(ring) for key_image, ring in all_rings_raw.items()}
 logger.info(f"Sorted data within rings: {len(all_rings)}")
 
-def process_key(left_key):
-    relevant_keys_local = set()
-    index_pairs_local = []
-    for right_key, right_ring in all_rings.items():
-        # Only do upper triangle
-        if left_key >= right_key:
-            continue
 
-        # Only compare rings of the same length
-        if len(all_rings[left_key]) != len(right_ring):
-            continue
+def process_batch(batch):
+    relevant_keys_batch = set()
+    index_pairs_batch = []
+    for left_key in tqdm(batch, mininterval=1):
+        for right_key, right_ring in all_rings.items():
+            # Only do upper triangle
+            if left_key >= right_key:
+                continue
 
-        # Check how many elements differ
-        diff_len: int = len(set(all_rings[left_key][:3]) ^ set(right_ring[:3]))
-        if diff_len <= 2:  # is potentially relevant
-            relevant_keys_local.add(left_key)
-            relevant_keys_local.add(right_key)
-            index_pairs_local.append((left_key, right_key))
-        elif diff_len > 2:
-            pass  # If the lists were sorted, we could do more here...
-    return relevant_keys_local, index_pairs_local
+            # Only compare rings of the same length
+            if len(all_rings[left_key]) != len(right_ring):
+                continue
+
+            # Check how many elements differ
+            diff_len: int = len(set(all_rings[left_key][:3]) ^ set(right_ring[:3]))
+            if diff_len <= 2:  # is potentially relevant
+                relevant_keys_batch.add(left_key)
+                relevant_keys_batch.add(right_key)
+                index_pairs_batch.append((left_key, right_key))
+            elif diff_len > 2:
+                pass  # If the lists were sorted, we could do more here...
+    return relevant_keys_batch, index_pairs_batch
+
+# Create batches of keys
+num_batches = math.ceil(len(all_rings) / num_workers_preprocess)
+batches = [list(all_rings.keys())[i:i+num_batches] for i in range(0, len(all_rings), num_batches)]
 
 # Build the indices of interest
 with Pool(num_workers_preprocess) as pool:
-    results = pool.map(process_key, all_rings.keys())
+    results = pool.map(process_batch, batches)
 
 relevant_keys = set()
 index_pairs = []
