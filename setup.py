@@ -14,15 +14,13 @@ from setuptools import setup
 
 
 def read(*names, **kwargs):
-    with io.open(
-        join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")
-    ) as fh:
+    with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
         return fh.read()
 
 
 setup(
     name="ringxor",
-    version="0.0.2.3",
+    version="0.0.3.0",
     license="MIT",
     description="Tooling for passive deanonymization of Monero-style blockchains using differ-by-one ring comparisons",
     long_description=read("README.rst"),
@@ -37,7 +35,7 @@ setup(
     classifiers=[
         # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
         "Intended Audience :: Developers",
-        'License :: OSI Approved :: MIT License',
+        "License :: OSI Approved :: MIT License",
         "Operating System :: Unix",
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
@@ -65,6 +63,8 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
+        "tqdm",
+        "loguru",
     ],
     extras_require={},
     # entry_points={
