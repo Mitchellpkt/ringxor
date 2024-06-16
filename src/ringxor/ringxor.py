@@ -37,9 +37,9 @@ def process_bucket_single_thread_core(
         logger.info(f"Processing {len(index_pairs)} index pairs")
 
     # Avoid redundant checks by only crunching the upper triangle of the index pair matrix
-    key_image_pointer_pairs: Set[Tuple[key_image_pointer, key_image_pointer]] = {
-        (ind1, ind2) for ind1, ind2 in tqdm(index_pairs) if ind2 > ind1
-    }
+    key_image_pointer_pairs: List[Tuple[key_image_pointer, key_image_pointer]] = [
+        (ind1, ind2) for ind1, ind2 in tqdm(index_pairs, mininterval=1) if (ind2 > ind1) and (len(rings[ind1]) == len(rings[ind2]))
+    ]
     if verbosity_level:
         logger.info(f"Reduced to {len(key_image_pointer_pairs)} index pairs")
 
@@ -102,7 +102,7 @@ def process_bucket(
 
     # Avoid redundant checks by only crunching the upper triangle of the index pair matrix
     key_image_pointer_pairs: List[Tuple[key_image_pointer, key_image_pointer]] = [
-        (ind1, ind2) for ind1, ind2 in tqdm(index_pairs, mininterval=1) if ind2 > ind1
+        (ind1, ind2) for ind1, ind2 in tqdm(index_pairs, mininterval=1) if (ind2 > ind1) and (len(rings[ind1]) == len(rings[ind2]))
     ]
     if verbosity_level:
         logger.info(f"Reduced to {len(key_image_pointer_pairs)} index pairs")
