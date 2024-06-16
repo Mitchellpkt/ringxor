@@ -22,10 +22,12 @@ def test_ringxor_process_bucket_single_thread_core():
     assert results[0] == {
         "key_image_pointer": "056189f0c3ed7806bc17655152613b3288dfa496b6566b9bbef930efaa87975f",
         "output_pointer": "416e9438f9f69410cf42959dc8ee515318ea6710e5bf8eb76f69c6183a09bded",
+        "match_key_image_pointer": "af6cb1936c08108500c3756e81073b6e48b33405be54df891e8b6e433b66b216",
     }
     assert results[53] == {
         "key_image_pointer": "fdfcbe3f85e480905d5db681bf89e5b81dc514871f0735c8a8cc7dffb6d7cde8",
         "output_pointer": "6d1fe6224bfccbb5f660d08bdb23fba89e75cf7d367b16bc40bcb3d337e12b0e",
+        "match_key_image_pointer": "7d64ac02c2823257fb88ab2b34c2ecb6fbd60c59a23650d682d42c71105ac32a",
     }
 
 
@@ -39,10 +41,12 @@ def test_ringxor_process_bucket_1_worker():
     assert results[0] == {
         "key_image_pointer": "056189f0c3ed7806bc17655152613b3288dfa496b6566b9bbef930efaa87975f",
         "output_pointer": "416e9438f9f69410cf42959dc8ee515318ea6710e5bf8eb76f69c6183a09bded",
+        "match_key_image_pointer": "af6cb1936c08108500c3756e81073b6e48b33405be54df891e8b6e433b66b216",
     }
     assert results[53] == {
         "key_image_pointer": "fdfcbe3f85e480905d5db681bf89e5b81dc514871f0735c8a8cc7dffb6d7cde8",
         "output_pointer": "6d1fe6224bfccbb5f660d08bdb23fba89e75cf7d367b16bc40bcb3d337e12b0e",
+        "match_key_image_pointer": "7d64ac02c2823257fb88ab2b34c2ecb6fbd60c59a23650d682d42c71105ac32a",
     }
 
 
@@ -59,10 +63,12 @@ def test_ringxor_process_bucket_N_worker():
         assert results[0] == {
             "key_image_pointer": "056189f0c3ed7806bc17655152613b3288dfa496b6566b9bbef930efaa87975f",
             "output_pointer": "416e9438f9f69410cf42959dc8ee515318ea6710e5bf8eb76f69c6183a09bded",
+            "match_key_image_pointer": "af6cb1936c08108500c3756e81073b6e48b33405be54df891e8b6e433b66b216",
         }
         assert results[53] == {
             "key_image_pointer": "fdfcbe3f85e480905d5db681bf89e5b81dc514871f0735c8a8cc7dffb6d7cde8",
             "output_pointer": "6d1fe6224bfccbb5f660d08bdb23fba89e75cf7d367b16bc40bcb3d337e12b0e",
+            "match_key_image_pointer": "7d64ac02c2823257fb88ab2b34c2ecb6fbd60c59a23650d682d42c71105ac32a",
         }
 
 
