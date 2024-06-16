@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm.auto import tqdm
 
 num_workers: int = 1
-limit: Optional[int] = 10_000
+limit: Optional[int] = 50_000
 convert_to_ints: bool = True  # Only do this if your output index can be converted to int
 input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
 # input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
@@ -21,6 +21,11 @@ with open(input_data_path, "r") as f:
     all_rings_raw = json.load(f)
 logger.info(f"Loaded ring data: {len(all_rings_raw)}")
 
+# Optional limit to speed up testing
+if limit:
+    all_rings_raw = dict(list(all_rings_raw.items())[:limit])
+    logger.info(f"Limited to {len(all_rings_raw)} rings")
+
 # The ringxor logic doesn't care if the values are strings or ints, but if using output idx can convert to int here
 if convert_to_ints:
     all_rings_raw = {key_image: [int(x) for x in ring] for key_image, ring in all_rings_raw.items()}
@@ -29,11 +34,6 @@ if convert_to_ints:
 # Sort the elements within rings
 all_rings: Dict[str, List[Any]] = {key_image: sorted(ring) for key_image, ring in all_rings_raw.items()}
 logger.info(f"Sorted data within rings: {len(all_rings)}")
-
-# Optional limit to speed up testing
-if limit:
-    all_rings = dict(list(all_rings.items())[:limit])
-    logger.info(f"Limited to {len(all_rings)} rings")
 
 # Build the indices of interest
 relevant_keys: Set[str] = set()
