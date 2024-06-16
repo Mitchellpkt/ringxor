@@ -6,7 +6,8 @@ from loguru import logger
 import pandas as pd
 
 num_workers: int = 1
-limit: Optional[int] = 50_000
+limit: Optional[int] = 10_000
+convert_to_ints: bool = True  # Only do this if your output index can be converted to int
 input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
 # input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
 output_data_path: pathlib.Path = (
@@ -26,6 +27,11 @@ logger.info(f"Converted ring data to sets: {len(all_rings)}")
 if limit:
     all_rings = dict(list(all_rings.items())[:limit])
     logger.info(f"Limited to {len(all_rings)} rings")
+
+# Convert the values from strings to ints
+if convert_to_ints:
+    all_rings = {key: set(map(int, value)) for key, value in all_rings.items()}
+    logger.info(f"Converted ring data to ints")
 
 # Do the analysis
 results_raw: List[Dict[str, Any]] = ringxor.process_bucket(
