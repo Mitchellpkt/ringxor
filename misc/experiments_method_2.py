@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm.auto import tqdm
 
 num_workers: int = 1
-limit: Optional[int] = 50_000
+limit: Optional[int] = 10_000
 convert_to_ints: bool = True  # Only do this if your output index can be converted to int
 input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
 # input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
@@ -50,11 +50,11 @@ for left_key, left_ring in tqdm(all_rings.items()):
 
         # Check how many elements differ
         diff_len: int = len(set(left_ring[:3]) ^ set(right_ring[:3]))
-        if diff_len <= 1:  # is potentially relevant
+        if diff_len <= 2:  # is potentially relevant
             relevant_keys.add(left_key)
             relevant_keys.add(right_key)
             index_pairs.append((left_key, right_key))
-        elif diff_len >= 2:
+        elif diff_len > 2:
             pass  # If the lists were sorted, we could do more here...
 logger.info(f"Built index pairs: {len(index_pairs)}")
 
