@@ -20,7 +20,7 @@ def read(*names, **kwargs):
 
 setup(
     name="ringxor",
-    version="0.0.3.1",
+    version="0.0.3.3",
     license="MIT",
     description="Tooling for passive deanonymization of Monero-style blockchains using differ-by-one ring comparisons",
     long_description=read("README.rst"),

@@ -95,7 +95,7 @@ This is achieved by sorting the outputs within each ring (usually this is alread
 
 (2) If there are 3 differences among the first 3 elements (i.e. the sets are disjoint), we have exited the neighborhood of possible DBO matches for ring A, and can step forward to the next candidate.
 
-Example: Consider several rings, which we have sorted lexicographically (both inside the rings, and the rings themselves).::
+Example: Consider several rings, which we have sorted lexicographically (both inside the rings, and the rings themselves)::
 
     A = {0, 1, 2, 3, 4}
     B = {1, 3, 5, 7, 9}
