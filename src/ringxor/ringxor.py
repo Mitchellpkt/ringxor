@@ -14,7 +14,7 @@ edge: Type = Dict[str, Any]
 
 def process_bucket_single_thread_core(
     rings: ring_bucket,
-    index_pairs: Union[List[Tuple[int, int]], None],
+    index_pairs: Union[List[Tuple[Any, Any]], None],
     diagnostic_level: int = 1,
     show_progress_bar: bool = True,
     verbosity_level: int = 1,
@@ -32,7 +32,7 @@ def process_bucket_single_thread_core(
     """
     # If no index pairs are provided (could be None, (), {}, [], etc...), use all possible combinations
     if not index_pairs:
-        index_pairs = list(itertools.product(list(rings.keys()), list(rings.keys())))
+        index_pairs: List[Tuple[Any, Any]] = list(itertools.product(list(rings.keys()), list(rings.keys())))
     if verbosity_level:
         logger.info(f"Processing {len(index_pairs)} index pairs")
 
@@ -75,7 +75,7 @@ def process_bucket_single_thread_core(
 
 def process_bucket(
     rings: ring_bucket,
-    index_pairs: Union[None, Collection[Tuple[int, int]]] = None,
+    index_pairs: Union[None, Collection[Tuple[Any, Any]]] = None,
     num_workers: Union[int, None] = None,
     diagnostic_level: int = 1,
     verbosity_level: int = 1,
@@ -96,7 +96,7 @@ def process_bucket(
 
     # If no index pairs are provided, use all possible combinations
     if index_pairs is None:
-        index_pairs = list(itertools.product(list(rings.keys()), list(rings.keys())))
+        index_pairs: List[Tuple[Any, Any]] = list(itertools.product(list(rings.keys()), list(rings.keys())))
     if verbosity_level:
         logger.info(f"Processing {len(index_pairs)} index pairs")
 
