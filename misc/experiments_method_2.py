@@ -1,3 +1,5 @@
+# This is a sloppy experimental script, not a part of the library
+
 import json
 from src.ringxor import ringxor
 import pathlib
