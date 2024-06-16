@@ -93,7 +93,7 @@ def process_bucket(
     """
     if verbosity_level:
         logger.info(f"Processing {len(rings)} rings")
-    
+
     # If no index pairs are provided, use all possible combinations
     if index_pairs is None:
         index_pairs = list(itertools.product(list(rings.keys()), list(rings.keys())))
@@ -122,7 +122,7 @@ def process_bucket(
         iterable = [(rings, batch, diagnostic_level) for batch in batches]
         if verbosity_level:
             logger.info(f"Starting parallel processing with {num_workers} workers")
-            
+
         # Process the chunks in parallel
         with Pool(processes=num_workers) as pool:
             results: List[List[edge]] = pool.starmap(
@@ -131,12 +131,12 @@ def process_bucket(
             )
         if verbosity_level:
             logger.info(f"Processed {len(results)} result batches")
-            
+
         # Combine the results
         edges: List[edge] = []
         for result in results:
             edges.extend(result)
         if verbosity_level:
             logger.info(f"Reshaped to {len(edges)} edges")
-            
+
         return edges

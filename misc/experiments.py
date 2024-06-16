@@ -9,7 +9,9 @@ num_workers: int = 1
 limit: Optional[int] = 50_000
 input_data_path: pathlib.Path = pathlib.Path.cwd() / ".." / "data" / "local_only" / "subset_d1.json"
 # input_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "version_controlled" / "demo_rings.json"
-output_data_path: pathlib.Path = pathlib.Path.cwd().parent / "data" / "local_only" / "results" / "result_d1.csv"
+output_data_path: pathlib.Path = (
+    pathlib.Path.cwd().parent / "data" / "local_only" / "results" / "result_d1.csv"
+)
 logger.info(f"Loading data from: {input_data_path} with {num_workers=}")
 
 # Load the test data
@@ -26,7 +28,9 @@ if limit:
     logger.info(f"Limited to {len(all_rings)} rings")
 
 # Do the analysis
-results_raw: List[Dict[str, Any]] = ringxor.process_bucket(all_rings, index_pairs=None, diagnostic_level=1, num_workers=num_workers)
+results_raw: List[Dict[str, Any]] = ringxor.process_bucket(
+    all_rings, index_pairs=None, diagnostic_level=1, num_workers=num_workers
+)
 logger.info(f"Processed bucket: {len(results_raw)}")
 
 # Reshape the results
